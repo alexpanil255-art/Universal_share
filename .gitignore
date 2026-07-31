@@ -80,3 +80,24 @@ memory/test_credentials.md
 
 # Mobile development
 android-sdk/
+
+# Expo / Metro
+.expo/
+.metro-cache/
+frontend/.expo/
+frontend/.metro-cache/
+frontend/dist/
+frontend/web-build/
+
+# Everything Share
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/.env
+frontend/.env
+
+# Test reports
+test_reports/
+tests/__pycache__/
+
+# Emergent internal
+.emergent/
