@@ -1,0 +1,186 @@
+{
+  "app_name": "Everything Share",
+  "personality": "1 iOS-Native Clean",
+  "personality_one_liner": "A universally simple, Apple-grade utility that feels invisible until you need it—designed for instant trust and seamless transfers.",
+  "color": {
+    "surface": "#F5F5F7",
+    "onSurface": "#1C1C1E",
+    "surfaceSecondary": "#FFFFFF",
+    "onSurfaceSecondary": "#1C1C1E",
+    "surfaceTertiary": "#E5E5EA",
+    "onSurfaceTertiary": "#3A3A3C",
+    "surfaceInverse": "#1C1C1E",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#10B981",
+    "brandPrimary": "#10B981",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#34D399",
+    "onBrandSecondary": "#064E3B",
+    "brandTertiary": "#D1FAE5",
+    "onBrandTertiary": "#065F46",
+    "success": "#34C759",
+    "onSuccess": "#FFFFFF",
+    "warning": "#FF9F0A",
+    "onWarning": "#FFFFFF",
+    "error": "#FF453A",
+    "onError": "#FFFFFF",
+    "info": "#32ADE6",
+    "onInfo": "#FFFFFF",
+    "border": "#E5E5EA",
+    "borderStrong": "#C7C7CC",
+    "divider": "#C6C6C8"
+  },
+  "dark_color_mapping_instructions": {
+    "surface": "#000000",
+    "onSurface": "#F2F2F7",
+    "surfaceSecondary": "#1C1C1E",
+    "onSurfaceSecondary": "#F2F2F7",
+    "surfaceTertiary": "#2C2C2E",
+    "onSurfaceTertiary": "#EBEBF5",
+    "surfaceInverse": "#FFFFFF",
+    "onSurfaceInverse": "#1C1C1E",
+    "brandTertiary": "#064E3B",
+    "onBrandTertiary": "#D1FAE5",
+    "border": "#38383A",
+    "borderStrong": "#48484A",
+    "divider": "#38383A"
+  },
+  "typography": {
+    "displayFontFamily": "Plus Jakarta Sans",
+    "textFontFamily": "Plus Jakarta Sans",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous vertical breathing room for content separation. Avoid dense dashboards; utilize whitespace to emphasize active transfers and paired devices.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use heavy glass on bottom tab bar and sticky headers to layer over the transfer lists.",
+      "Use glass for floating toolbars in Smart Board mode.",
+      "Use frosted glass overlays on top of the abstract radar texture in the Send/Pairing screen."
+    ],
+    "dont's": [
+      "Do not blur standard list rows or form inputs.",
+      "Do not use transparent glass over high-contrast scrolling text without a strong surface tint."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-blur",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Home",
+      "purpose": "A launchpad showing active/nearby devices and immediate quick-actions to send or receive.",
+      "states": {
+        "loading": "Centered spinner",
+        "empty": "Illustration of a radar with 'Waiting for nearby devices...'",
+        "error": "Error toast with a retry button"
+      },
+      "layout": "Sticky glass header. Top section features two prominent, side-by-side (or stacked) hero action cards: 'Send' and 'Receive' with subtle brand gradients. Below, a horizontal scrolling list of 'Nearby Devices' (using device icons in brandTertiary circles). Followed by a vertical list of 'Recent Transfers' showing file icons, names, and progress/completion status."
+    },
+    {
+      "name": "Send (Pairing)",
+      "purpose": "Discovers and pairs with devices via QR scanner, 6-digit code, or proximity radar.",
+      "states": {
+        "loading": "Pulsing radar animation",
+        "empty": "N/A",
+        "error": "Failed to connect alert, retry CTA"
+      },
+      "layout": "Fullscreen immersive screen. Background uses the abstract glassmorphism texture. Top half is a camera viewfinder/QR scanner. A prominent bottom sheet (Glass) houses a 6-digit code input field and a grid of discovered nearby devices to tap and send."
+    },
+    {
+      "name": "Receive",
+      "purpose": "Displays QR/Code for others to connect and monitors incoming file queues.",
+      "states": {
+        "loading": "Generating code...",
+        "empty": "No active transfers. 'Share your code above to receive files.'",
+        "error": "Network disconnected message"
+      },
+      "layout": "Large central surfaceSecondary card containing the QR code and large, mono-spaced 6-digit PIN. Below the card, an 'Incoming Transfers' queue showing stacked list items with inline loading progress rings and cancel/pause buttons."
+    },
+    {
+      "name": "Files (Inbox)",
+      "purpose": "Built-in file manager to browse, preview, and organize received files.",
+      "states": {
+        "loading": "Skeleton grid",
+        "empty": "Empty desk image. 'No files received yet.'",
+        "error": "Storage access error message"
+      },
+      "layout": "Glass sticky header with search bar and horizontal filter chips (All, Images, PDFs, Docs, Tags). Below is a 2-column grid or list view of files with thumbnails. Tap to open in full-screen preview. Floating Action Button (FAB) in brandPrimary for 'New Folder'."
+    },
+    {
+      "name": "Smart Board (Presentation Mode)",
+      "purpose": "A collaborative, distraction-free canvas for presenting and annotating files.",
+      "states": {
+        "loading": "Loading document...",
+        "empty": "N/A",
+        "error": "Unable to render file format"
+      },
+      "layout": "Landscape/Fullscreen immersive view (no standard navigation). The main file (PDF/Image/Whiteboard) takes up the full canvas. A floating, draggable glass toolbar houses annotation tools (Pen, Highlighter, Eraser, Laser Pointer). A collapsible glass thumbnail strip on the bottom or side allows quick slide navigation. Pinned content cards can float on the board like a Pinterest workspace."
+    }
+  ],
+  "images": {
+    "radar_abstract_background": {
+      "url": "https://images.unsplash.com/photo-1584384689201-e0bcbe2c7f1d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzB8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdsYXNzbW9ycGhpc20lMjB0ZXh0dXJlfGVufDB8fHx8MTc4NTQ3ODk0MXww&ixlib=rb-4.1.0&q=85",
+      "alt": "abstract glassmorphism texture for send screen background"
+    },
+    "empty_inbox": {
+      "url": "https://images.unsplash.com/photo-1585119192382-71236d43b689?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwxfHxlbXB0eSUyMGZvbGRlciUyMG9yZ2FuaXplZCUyMGRlc2t8ZW58MHx8fHwxNzg1NDc4OTQxfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "clean empty organized desk for empty file manager state"
+    },
+    "smart_board_empty": {
+      "url": "https://images.unsplash.com/photo-1697059361461-b81d0e98c3af?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxzbWFydCUyMGJvYXJkJTIwbWVldGluZyUyMHJvb20lMjBwcmVzZW50YXRpb258ZW58MHx8fHwxNzg1NDc4OTQxfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "empty smart board in meeting room"
+    }
+  },
+  "haptics": {
+    "events": {
+      "file_transfer_complete": "success",
+      "device_paired": "success",
+      "tool_selected": "light",
+      "tab_change": "light",
+      "button_press": "medium",
+      "error_occurred": "error"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette provided; NO blues or purples are allowed. Use the Emerald Green brand color for primary actions.",
+    "Implement high-quality glassmorphism using 'expo-blur' on bottom tab bars, sticky headers, and floating annotation toolbars in Smart Board mode.",
+    "Ensure 'Smart Board' mode behaves responsively on tablets and web, prioritizing fullscreen canvas rendering with floating, draggable glass toolbars.",
+    "Apply 'radar_abstract_background' to the 'Send (Pairing)' screen as a full-bleed background, with a dark-to-transparent scrim overlay so UI text remains highly legible.",
+    "Build a robust transfer queue UI with clear progress indicators (rings or bars) and inline pause/cancel actions, mirroring Apple's AirDrop elegance.",
+    "Enforce iOS-native spacing and component sizing: 44x44pt minimum touch targets, generous lg/xl screen padding, and smooth React Native Reanimated transitions between states."
+  ]
+}
