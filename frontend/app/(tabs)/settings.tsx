@@ -20,6 +20,10 @@ export default function SettingsScreen() {
   const [savingName, setSavingName] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  React.useEffect(() => {
+    if (device?.name) setName(device.name);
+  }, [device?.name]);
+
   const saveName = async () => {
     if (!device || !name.trim() || name.trim() === device.name) return;
     setSavingName(true);
