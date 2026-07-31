@@ -1,0 +1,52 @@
+{
+  "summary": "End-to-end verification of Everything Share (backend + Expo web). Backend: 17/17 pytest cases green — device register/get-by-id/get-by-code/patch, file upload (text + PNG), 404 for unknown sender/code, received/sent/all list endpoints (sorted DESC), filename regex search, mime-kind filter, GET/download/favorite/delete of a file, and WebSocket delivery of both file.received and file.sent events after upload. Frontend: onboarding → home code, /send resolves target on 6-digit code entry, /receive renders QR + big code + copy button, /files search + filter chips render, /preview/{id} shows Download/Present/Delete for text files, /smartboard/{id} exposes pointer/pen/highlight/laser/eraser + clear/exit + color swatches + timer, theme chips (system/light/dark) toggle, dark theme persists. One functional bug: Settings device-name input is empty on first mount (state initialised before device loads from AsyncStorage), so Save stays disabled until the user types. Naming note for main agent: filter chip testIDs are singular (filter-favorite / filter-image / filter-video / filter-pdf / filter-doc / filter-audio), differing from the plural labels in the review request — spec should be aligned to the current keys or vice versa. Non-blocking RN Web console warnings: shadow* props deprecated (use boxShadow) and props.pointerEvents deprecated (use style.pointerEvents) — these come from library styles, safe to ignore for now.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/files/upload", "issue": "Response returns 404 only when sender OR code is unknown; behaviour is correct but there is no validation of empty filename or zero-byte files. Not a blocker."},
+      {"endpoint": "GET /api/devices/code/{code}", "issue": "6-digit codes may (rarely) collide across the DB — make_unique_code retries 20× which is fine, but there is no unique index on devices.code."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "app/(tabs)/settings.tsx", "issue": "Device name TextInput mounts empty because useState(device?.name || '') runs on the first render when device is still null (loaded async from storage). User must retype name before Save is enabled. Fix: sync via useEffect(() => setName(device?.name || ''), [device?.id, device?.name]).", "testID": "settings-name-input", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "files", "issues": ["Filter chip testIDs are singular (filter-favorite, filter-image, filter-video, filter-pdf, filter-doc, filter-audio) — review spec lists plural labels (favorites/images/videos/pdfs/docs/audio). Update the review contract or add aliases."]}
+    ],
+    "react_native_issues": [
+      {"component": "RN Web styles", "issue": "Console warning: 'shadow*' style props are deprecated. Use 'boxShadow'. Emitted from RN Web internals — verify no in-app style uses shadowColor/shadowOffset/shadowOpacity/shadowRadius directly on web; migrate to boxShadow for RN 0.76+."},
+      {"component": "RN Web props", "issue": "Console warning: props.pointerEvents is deprecated. Use style.pointerEvents. Grep the codebase for `pointerEvents=` and move to StyleSheet."}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_everything_share.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix Settings screen: sync local `name` state when `device` becomes available (useEffect on device.id / device.name).",
+    "Reconcile filter chip testIDs vs review spec — either rename keys to plural in files.tsx FILTERS array (favorites/images/videos/pdfs/docs/audio) OR update the review contract to singular.",
+    "Migrate shadow* style props to boxShadow, and pointerEvents prop to style.pointerEvents to remove deprecation warnings on web.",
+    "(Nice-to-have) Add a unique index on devices.code in MongoDB to guarantee uniqueness.",
+    "(Nice-to-have) Consider WebRTC hand-off — currently everything is cloud-relay only; noted as deferred in the problem statement."
+  ],
+  "critical_code_review_comments": [
+    "server.py cleanly separates devices/files/ws — good. WSManager silently disconnects on send failure — fine for MVP.",
+    "backend/server.py delete endpoint removes disk file BUT does not gracefully handle concurrent deletes (rare race). Not critical.",
+    "AppContext.tsx stores device via storage.setItem(JSON.stringify(d)) — the storage util already JSON-serialises; that leads to double-encoded JSON in localStorage. The app decodes correctly on load, but consider passing the raw object to storage.setItem to keep the on-disk shape consistent (matches TypeScript signature of StorageItemValue).",
+    "settings.tsx line 19: state initialised from possibly-null device; add useEffect sync (see ui_bugs).",
+    "files.tsx: horizontal filter chip strip is fine on 390px viewport; consider adding minimum touch target (44px) — chips are ~40px tall which is under Apple HIG."
+  ],
+  "updated_files": [
+    "/app/backend/tests/conftest.py (new)",
+    "/app/backend/tests/test_everything_share.py (new — 17 tests, all passing)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "~95%"},
+  "seed_data_creation": "Tests register two TEST_-prefixed devices per run and upload small in-memory text/PNG files; these are left in the DB (cleanup not implemented) but harmless and easy to grep by TEST_ prefix.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend is fully green. Only real bug is the Settings name-input pre-population. Filter chip testID naming (singular vs plural) is a spec/contract question, not a functional break. Use EXPO_PUBLIC_BACKEND_URL for base URL. To upload from the browser, remember AsyncStorage web shim double-encodes JSON — do `JSON.parse(JSON.parse(raw))` when reading es.device.v1 directly from localStorage in Playwright.",
+  "rca_of_issue": "Settings-name-empty bug — root cause: `const [name, setName] = useState(device?.name || '');` in /app/frontend/app/(tabs)/settings.tsx line 19 initialises exactly once. On first mount, AppContext is still loading `device` from storage, so `device` is null and `name` locks to ''. The render then returns null via `if (!device) return null` (line 46), but when the next render happens with device populated, useState is NOT re-run, so `name` stays ''. Repro: cold-load /settings after fresh onboarding → name input is empty. Mitigation: add `useEffect(() => { setName(device?.name || ''); }, [device?.id, device?.name]);`."
+}

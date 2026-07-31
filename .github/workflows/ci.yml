@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (Python)
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports: [27017:27017]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint
+        run: |
+          cd backend
+          black --check . || true
+          flake8 . || true
+      - name: Smoke test
+        env:
+          MONGO_URL: mongodb://localhost:27017
+          DB_NAME: es_ci
+        run: |
+          cd backend
+          python -c "from server import app; print('imports ok')"
+
+  frontend:
+    name: Frontend (Expo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install deps
+        run: |
+          cd frontend
+          yarn install --frozen-lockfile
+      - name: Lint
+        run: |
+          cd frontend
+          yarn lint --max-warnings=0 || yarn lint
+      - name: Type check
+        run: |
+          cd frontend
+          npx tsc --noEmit
