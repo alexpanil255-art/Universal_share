@@ -81,9 +81,19 @@ Open `http://localhost:3000` on two devices (or two browser tabs) and enter one 
 
 ## Building / deploying
 
-- **Web / PWA** — `yarn expo export --platform web` produces a static bundle you can host on any static host (Vercel, Netlify, Cloudflare Pages, S3, GitHub Pages).
+Everything Share is designed to run on **Vercel (frontend) + Render (backend) + MongoDB Atlas (database)** — all three have free tiers. Full step-by-step in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
+- **Frontend → Vercel** — the repo ships [`frontend/vercel.json`](frontend/vercel.json). Import the repo, set root to `frontend/`, and add `EXPO_PUBLIC_BACKEND_URL` pointing at your Render service.
+- **Backend → Render** — the repo ships a Blueprint at [`render.yaml`](render.yaml) and a [`backend/Dockerfile`](backend/Dockerfile). Import the repo as a Blueprint, paste your MongoDB Atlas connection string as `MONGO_URL`, and deploy.
+- **Web / PWA (self-host)** — `yarn expo export --platform web` produces a static bundle you can also host on Netlify, Cloudflare Pages, S3, or GitHub Pages.
 - **iOS / Android** — use `eas build` or the Emergent one-click deploy flow.
-- **Backend** — a plain `Dockerfile` + `docker-compose.yml` example is documented in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
+One-click badges (add these after pushing to GitHub):
+
+```md
+[![Deploy backend on Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/<you>/everything-share)
+[![Deploy frontend on Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/<you>/everything-share&root-directory=frontend&env=EXPO_PUBLIC_BACKEND_URL)
+```
 
 ## API overview
 

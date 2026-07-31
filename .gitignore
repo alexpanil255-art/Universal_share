@@ -101,3 +101,9 @@ tests/__pycache__/
 
 # Emergent internal
 .emergent/
+.env
+.env.*
+*.env
+credentials.json
+*.key
+.credentials

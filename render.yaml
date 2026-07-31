@@ -1,0 +1,29 @@
+# Render Blueprint for Everything Share backend.
+# One-click deploy: https://render.com/deploy?repo=<your-github-repo-url>
+services:
+  - type: web
+    name: everything-share-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: MONGO_URL
+        # Paste a MongoDB Atlas connection string here after deploy
+        # (Render dashboard → Environment → Add). Do NOT commit real secrets.
+        sync: false
+      - key: DB_NAME
+        value: everything_share
+      - key: UPLOAD_DIR
+        # Persistent disk mount (attach a disk in the Render UI for real deployments;
+        # by default files live on ephemeral instance storage).
+        value: /var/data/uploads
+    disk:
+      name: uploads
+      mountPath: /var/data
+      sizeGB: 1
