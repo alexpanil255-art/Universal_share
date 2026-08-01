@@ -3,7 +3,11 @@ import { Appearance } from "react-native";
 import { storage } from "@/src/utils/storage";
 import { Colors, darkColors, lightColors, ThemeMode } from "@/src/theme/theme";
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL!;
+const BACKEND_URL =
+  process.env.EXPO_PUBLIC_BACKEND_URL ??
+  "https://universal-share-backend.onrender.com";
+
+const API = `${BACKEND_URL}/api`;
 const API = `${BACKEND_URL}/api`;
 
 export interface Device {
